@@ -1,19 +1,16 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * import {onCall} from "firebase-functions/v2/https";
- * import {onDocumentWritten} from "firebase-functions/v2/firestore";
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
-
-import { onRequest } from 'firebase-functions/v2/https'
+import { onSchedule } from 'firebase-functions/v2/scheduler'
 import * as logger from 'firebase-functions/logger'
+import * as admin from 'firebase-admin'
 
-// Start writing functions
-// https://firebase.google.com/docs/functions/typescript
+admin.initializeApp()
 
-// export const helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+export const handleDailyCleanup = onSchedule('every day 00:00', async () => {
+  logger.info('stated clean up')
+  try {
+    const ref = await admin.database().ref('/api')
+    await ref.remove()
+    logger.info('Scheduled daily cleanup completed successfully.')
+  } catch (err) {
+    logger.error(`Error occurred during scheduled cleanup: ${err}`)
+  }
+})
