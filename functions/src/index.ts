@@ -7,7 +7,11 @@ admin.initializeApp()
 
 export const handleUserValidation = functions.auth.user().onCreate(async (user) => {
   logger.info('Adding user to DB')
-  await admin.database().ref(`/api/admin/${user.uid}`).set({ validated: false })
+  await admin.auth().setCustomUserClaims(user.uid, { validated: false })
+  await admin
+    .database()
+    .ref(`/api/admin/${user.uid}`)
+    .set({ validated: false, email: user.email, uid: user.uid })
   logger.info('Finished adding user to DB')
 })
 
