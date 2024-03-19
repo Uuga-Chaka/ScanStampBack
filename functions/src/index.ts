@@ -17,6 +17,6 @@ export const handleUserValidation = functions.auth.user().onCreate(async (user) 
 
 export const handleDailyCleanup = onSchedule('every day 00:00', async () => {
   logger.info('Started clean up')
-  await admin.database().ref('/api').remove()
+  await admin.database().ref('/api/user/').remove()
   logger.info('Scheduled daily cleanup completed successfully.')
 })
